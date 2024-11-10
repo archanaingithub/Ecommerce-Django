@@ -5,55 +5,61 @@ from django.contrib.auth import get_user_model
 
 User = get_user_model()
 
+
 class Category(models.Model):
     title = models.CharField(max_length=25, unique=True)
-    
+
     def __str__(self):
         return self.title
-    
+
+
 class Product(models.Model):
     name = models.CharField(max_length=30)
     description = models.TextField(max_length=1000)
     price = models.DecimalField(decimal_places=2, max_digits=6)
     inventory = models.IntegerField()
-    category = models.ForeignKey(Category, on_delete=models.CASCADE,related_name="products")
-    
+    category = models.ForeignKey(
+        Category, on_delete=models.CASCADE, related_name="products"
+    )
+
     def __str__(self):
         return f"{self.name} -- {self.price}"
-    
+
+
 class Customer(models.Model):
     first_name = models.CharField(max_length=20)
     last_name = models.CharField(max_length=20)
     contact = models.IntegerField()
     customer = models.ForeignKey(User, on_delete=models.PROTECT)
-    
+
     def __str__(self):
         return f"{self.first_name} - {self.contact}"
-    
+
+
 class Address(models.Model):
     customer = models.ForeignKey(Customer, on_delete=models.CASCADE)
     country = models.CharField(max_length=30)
     city = models.CharField(max_length=30)
     street_name = models.CharField(max_length=30)
-    
-    
+
+
 class Order(models.Model):
     PENDING_STATUS = "P"
     COMPLETED_STATUS = "C"
     FAILED_STATUS = "F"
-    
+
     PAYMENT_STATUS = [
         (PENDING_STATUS, "Pending"),
         (COMPLETED_STATUS, "Completed"),
         (FAILED_STATUS, "Failed"),
     ]
-    
+
     # PENDING = "P"
     # PROCESSING = 'Processing'
     # SHIPPED = 'S'
     # DELIVERED = "D"
     # CANCELLED = "C"
-    
+
     # ORDER_STATUS = [
     #     (PENDING, "Pending"),
     #     (PROCESSING, "Processing"),
@@ -61,26 +67,28 @@ class Order(models.Model):
     #     (DELIVERED, "Delivered"),
     #     (CANCELLED, "Cancelled"),
     # ]
-    
+
     place_at = models.DateTimeField(auto_now=True)
-    payment_status = models.CharField(max_length=1,
-                                    choices=PAYMENT_STATUS,
-                                    default=PENDING_STATUS)
+    payment_status = models.CharField(
+        max_length=1, choices=PAYMENT_STATUS, default=PENDING_STATUS
+    )
     # order_status = models.CharField(max_length=10,
     #                                 choices=ORDER_STATUS,
     #                                 default=PENDING)
     user = models.ForeignKey(User, on_delete=models.PROTECT)
-    
+
 
 class OrderItem(models.Model):
     order = models.ForeignKey(Order, on_delete=models.CASCADE)
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
     quantity = models.IntegerField()
     price = models.FloatField()
-    
+
+
 class Cart(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    
+
+
 class CartItem(models.Model):
     cart = models.ForeignKey(Cart, on_delete=models.CASCADE)
     product = models.ForeignKey(Product, on_delete=models.CASCADE)

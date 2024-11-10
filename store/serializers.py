@@ -15,6 +15,7 @@ class CategorySerializer(serializers.ModelSerializer):
 class ProductSerializer(serializers.ModelSerializer):
     price = serializers.IntegerField()
     inventory = serializers.IntegerField()
+    
     class Meta:
         model = models.Product
         fields = [
@@ -24,3 +25,4 @@ class ProductSerializer(serializers.ModelSerializer):
             "category",
             "description",
         ]
+        
