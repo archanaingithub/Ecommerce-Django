@@ -17,7 +17,8 @@ Including another URLconf
 # from django.contrib import admin
 # from django.urls import path
 from rest_framework.routers import SimpleRouter
-
+from .views import UserViewSet
 
 router = SimpleRouter()
+router.register(r"user/register", UserViewSet)
 urlpatterns = [] + router.urls
