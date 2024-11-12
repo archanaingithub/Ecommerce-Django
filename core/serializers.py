@@ -2,6 +2,7 @@ from rest_framework import serializers
 from django.contrib.auth import get_user_model
 from .models import AbstractUser
 from random import randint
+from rest_framework.authentication import authenticate
 from django.core.mail import send_mail
 
 User = get_user_model()
@@ -9,7 +10,7 @@ User = get_user_model()
 
 class UserRegisterSerializer(serializers.Serializer):
     email = serializers.EmailField(max_length=30)
-    username = serializers.CharField(max_length=30)
+    username = serializers.CharField(max_length=30, write_only=True)
     password = serializers.CharField(max_length=16)
     confirm_password = serializers.CharField(max_length=16, write_only=True)
     """confirm password doesn't exist in database(v_d).
@@ -40,9 +41,8 @@ class UserRegisterSerializer(serializers.Serializer):
         return super().validate(attrs)
 
     def create(self, validated_data, *args, **kwargs):
-        user = User.objects.create(
+        user = User.objects.create_user(
             email=validated_data["email"],
-            username=validated_data["username"],
             password=validated_data["password"],
         )
 
@@ -67,7 +67,20 @@ class UserRegisterSerializer(serializers.Serializer):
 
 class UserLoginSerializer(serializers.Serializer):
     email = serializers.EmailField(max_length=30)
-    password = serializers.CharField(max_length=16)
+    password = serializers.CharField(max_length=300, write_only=True)
+    
+    
+    def validate(self, attrs):
+        email = attrs.get("email")
+        password = attrs.get("password")
+        
+        user = authenticate(username=email, password=password)
+        
+        if user is None:
+            raise serializers.ValidationError("invalid email or password")
+        
+        attrs["user"] = user
+        return attrs
     
     
 class UserActivationSerializer(serializers.Serializer):

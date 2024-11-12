@@ -20,17 +20,18 @@ class UserViewSet(GenericViewSet, mixins.CreateModelMixin):
     queryset = User.objects.all()
     serializer_class = UserRegisterSerializer
 
-    @swagger_auto_schema(methods=["POST"], request_body=UserLoginSerializer)
+    @swagger_auto_schema(
+        methods=["POST"],
+        request_body=UserLoginSerializer
+        )
     @action(detail=False, methods=["POST"])
     def login(self, request):
         serializer = UserLoginSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-
         user = authenticate(
             username=serializer.validated_data["email"],
             password=serializer.validated_data["password"],
         )
-
         if user:
             token, _ = Token.objects.get_or_create(user=user)
             return Response(
@@ -40,13 +41,16 @@ class UserViewSet(GenericViewSet, mixins.CreateModelMixin):
                 }
             )
         return Response(
-            {
-                "details: invalid credentials",
-            },
-            status=status.HTTP_401_UNAUTHORIZED,
-        )
+                {
+                    "details: invalid credentials",
+                },
+                status=status.HTTP_401_UNAUTHORIZED,
+            )
 
-    @swagger_auto_schema(methods=["POST"], request_body=UserActivationSerializer)
+    @swagger_auto_schema(
+        methods=["POST"],
+        request_body=UserActivationSerializer
+        )
     @action(methods=["POST"], detail=False)
     def activation(self, request):
         serializer = UserActivationSerializer(data=request.data)

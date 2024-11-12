@@ -8,3 +8,4 @@ class ProductFilter(filters.FilterSet):
             "name": ["exact"],
             "price": ["gte", "lte"]
         }
+
