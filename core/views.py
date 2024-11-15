@@ -67,7 +67,7 @@ class UserViewSet(GenericViewSet, mixins.CreateModelMixin):
                 {"details": "your account has been activated successfully!"},
                 status=status.HTTP_200_OK,
             )
-        except user.DoesNotExist:
+        except User.DoesNotExist:
             return Response(
                 {"details": "invalid credentials"},
                 status=status.HTTP_406_NOT_ACCEPTABLE,

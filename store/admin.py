@@ -66,3 +66,9 @@ class CartItemInline(admin.TabularInline):
 @admin.register(models.Cart)
 class CartAdmin(admin.ModelAdmin):
     inlines = [CartItemInline]
+    list_display = [
+        "id",
+        "user",
+    ]
+    
+    
